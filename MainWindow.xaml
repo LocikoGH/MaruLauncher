@@ -1,0 +1,388 @@
+<Window x:Class="MaruLauncher.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MaruLauncher" Height="900" Width="1400" MinHeight="700" MinWidth="1100"
+        WindowStartupLocation="CenterScreen">
+    <Grid Margin="18" Background="{DynamicResource MainBackgroundBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="64" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="34" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="{DynamicResource SurfaceBrush}" CornerRadius="10" Padding="16,8" Margin="0,0,0,12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="MARU" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}" />
+                    <TextBlock Text="  LAUNCHER" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center" />
+                    <TextBlock Text="  Java Edition" Foreground="{DynamicResource MutedBrush}" VerticalAlignment="Center" Margin="8,0,0,0" />
+                </StackPanel>
+                <TextBlock Grid.Column="1" x:Name="ActiveProfileLabel" Text="Offline:" VerticalAlignment="Center" Margin="16,0,8,0" />
+                <ComboBox Grid.Column="2" x:Name="ActiveProfileCombo" Width="210" VerticalAlignment="Center"
+                          DisplayMemberPath="Name" SelectionChanged="ActiveProfileCombo_SelectionChanged" />
+            </Grid>
+        </Border>
+
+        <TabControl Grid.Row="1" x:Name="NavigationTabs">
+            <TabItem Header="Главная">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Grid Margin="18">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1.1*" />
+                            <ColumnDefinition Width="18" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Быстрый запуск" FontSize="24" FontWeight="SemiBold" Margin="4,4,0,10" />
+                            <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="10" Padding="20" Margin="4">
+                                <StackPanel>
+                                    <TextBlock Text="Последний запущенный экземпляр" Foreground="{DynamicResource MutedBrush}" />
+                                    <TextBlock x:Name="LastInstanceTitle" Text="Пока нет запусков" FontSize="22" FontWeight="SemiBold" Margin="0,8,0,4" />
+                                    <TextBlock x:Name="LastInstanceDetails" Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" />
+                                    <Button x:Name="LaunchLastButton" Content="Запустить" Style="{StaticResource PrimaryButton}"
+                                            HorizontalAlignment="Left" Margin="0,16,0,0" Click="LaunchLastButton_Click" />
+                                </StackPanel>
+                            </Border>
+                            <TextBlock Text="Избранные экземпляры" FontSize="18" FontWeight="SemiBold" Margin="4,18,0,8" />
+                            <ListBox x:Name="FavoritesList" Height="260" SelectionChanged="FavoritesList_SelectionChanged">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                                                <TextBlock Text="{Binding VersionSummary}" Foreground="{DynamicResource MutedBrush}" FontSize="12" />
+                                            </StackPanel>
+                                            <TextBlock Grid.Column="1" Text="{Binding Status}" Foreground="{DynamicResource MutedBrush}"
+                                                       VerticalAlignment="Center" Margin="10,0,0,0" />
+                                            <Button Grid.Column="2" Content="Запуск" Tag="{Binding}" Click="LaunchFavorite_Click"
+                                                    VerticalAlignment="Center" Margin="8,2,2,2" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                            <Button Content="Все экземпляры" HorizontalAlignment="Left" Margin="4,10,0,0"
+                                    Click="OpenInstances_Click" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Состояние лаунчера" FontSize="24" FontWeight="SemiBold" Margin="4,4,0,10" />
+                            <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="10" Padding="20" Margin="4">
+                                <StackPanel>
+                                    <TextBlock Text="Активный профиль" Foreground="{DynamicResource MutedBrush}" />
+                                    <TextBlock x:Name="HomeProfileName" FontSize="20" FontWeight="SemiBold" Margin="0,5,0,2" />
+                                    <TextBlock x:Name="HomeProfileType" Foreground="{DynamicResource MutedBrush}" />
+                                </StackPanel>
+                            </Border>
+                            <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="10" Padding="20" Margin="4,12,4,4">
+                                <StackPanel>
+                                    <TextBlock Text="Последний результат игры" Foreground="{DynamicResource MutedBrush}" />
+                                    <TextBlock x:Name="HomeLastResult" Text="Запусков пока не было" TextWrapping="Wrap" Margin="0,7,0,0" />
+                                </StackPanel>
+                            </Border>
+                            <TextBlock Text="Offline-профиль предназначен для локального тестирования и одиночной игры. Он не подтверждает лицензию и не обеспечивает обычную онлайн-аутентификацию; серверы с проверкой аккаунта могут отказать во входе."
+                                       TextWrapping="Wrap" Foreground="{DynamicResource MutedBrush}" Margin="8,18,8,0" />
+                        </StackPanel>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Экземпляры">
+                <Grid Margin="16">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <WrapPanel Grid.Row="0" Margin="0,0,0,10">
+                        <TextBox x:Name="InstanceNameInput" Width="180" ToolTip="Название экземпляра" />
+                        <ComboBox x:Name="VersionComboBox" Width="150" ToolTip="Версия Minecraft" />
+                        <CheckBox x:Name="AutoInstallFabricCheckBox" Content="Автоматически установить Fabric"
+                                  IsChecked="True" VerticalAlignment="Center" />
+                        <Button Content="Создать и установить" Style="{StaticResource PrimaryButton}" Click="CreateInstance_Click" />
+                        <Button Content="Обновить версии" Click="RefreshVersions_Click" />
+                        <TextBox x:Name="InstanceSearchInput" Width="190" ToolTip="Поиск по названию"
+                                 TextChanged="InstanceSearchInput_TextChanged" />
+                    </WrapPanel>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.9*" />
+                            <ColumnDefinition Width="18" />
+                            <ColumnDefinition Width="1.1*" />
+                        </Grid.ColumnDefinitions>
+                        <ListBox Grid.Column="0" x:Name="InstancesList" SelectionChanged="InstancesList_SelectionChanged">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Name}" FontSize="15" FontWeight="SemiBold" />
+                                            <TextBlock Text="{Binding VersionSummary}" Foreground="{DynamicResource MutedBrush}" FontSize="12" />
+                                            <TextBlock Text="{Binding Status}" Foreground="{DynamicResource MutedBrush}" FontSize="11" />
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="1" Text="★" Foreground="{DynamicResource AccentBrush}"
+                                                   VerticalAlignment="Center" FontSize="18">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsFavorite}" Value="True">
+                                                            <Setter Property="Visibility" Value="Visible" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                        <Button Grid.Column="2" Content="Удалить" Tag="{Binding}"
+                                                VerticalAlignment="Center" Margin="8,2,2,2"
+                                                Click="DeleteInstance_Click" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto">
+                            <StackPanel x:Name="InstanceDetailsPanel" IsEnabled="False">
+                                <TextBlock x:Name="SelectedInstanceTitle" Text="Выберите экземпляр" FontSize="22" FontWeight="SemiBold" Margin="2,2,2,8" />
+                                <TextBlock x:Name="SelectedInstanceDetails" Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" Margin="2,0,2,8" />
+                                <WrapPanel>
+                                    <Button Content="Запустить" Style="{StaticResource PrimaryButton}" Click="LaunchSelected_Click" />
+                                    <Button x:Name="FavoriteButton" Content="В избранное" Click="ToggleFavorite_Click" />
+                                    <Button Content="Удалить экземпляр" Click="DeleteInstance_Click" />
+                                </WrapPanel>
+                                <TextBlock Text="Загрузчик Fabric" FontSize="16" FontWeight="SemiBold" Margin="4,14,0,2" />
+                                <WrapPanel>
+                                    <TextBox x:Name="FabricVersionInput" Width="130" Text="latest" ToolTip="Версия Fabric Loader или latest" />
+                                    <Button Content="Установить Fabric" Click="InstallFabric_Click" />
+                                    <Button Content="Установить Fabric API" Click="InstallFabricApi_Click" />
+                                </WrapPanel>
+                                <Button Content="Открыть каталог игры" HorizontalAlignment="Left" Click="OpenGameDirectory_Click" />
+                                <Button Content="Открыть папку модов" HorizontalAlignment="Left" Click="OpenModsDirectory_Click" />
+                                <TextBlock Text="Установка загружает файлы с официальных серверов Mojang и Fabric. Fabric API загружается с Modrinth только после нажатия кнопки."
+                                           TextWrapping="Wrap" Foreground="{DynamicResource MutedBrush}" Margin="4,12,4,0" />
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Аккаунты">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Grid Margin="18">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.9*" />
+                            <ColumnDefinition Width="24" />
+                            <ColumnDefinition Width="1.1*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Профили" FontSize="22" FontWeight="SemiBold" Margin="4,4,4,10" />
+                            <ListBox x:Name="ProfilesList" Height="330" SelectionChanged="ProfilesList_SelectionChanged">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                                            <TextBlock Text="{Binding Type}" Foreground="{DynamicResource MutedBrush}" FontSize="12" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                            <WrapPanel Margin="0,8,0,0">
+                                <Button Content="Сделать активным" Click="SetActiveProfile_Click" />
+                                <Button Content="Удалить профиль" Click="DeleteProfile_Click" />
+                            </WrapPanel>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Offline-профиль" FontSize="18" FontWeight="SemiBold" Margin="4,4,4,6" />
+                            <TextBlock Text="Имя: 3–16 символов, только латинские буквы, цифры и подчёркивание."
+                                       Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" Margin="4" />
+                            <WrapPanel>
+                                <TextBox x:Name="OfflineNameInput" Width="220" ToolTip="Имя offline-профиля" />
+                                <Button Content="Создать" Style="{StaticResource PrimaryButton}" Click="CreateOfflineProfile_Click" />
+                                <Button Content="Переименовать" Click="RenameOfflineProfile_Click" />
+                            </WrapPanel>
+                            <TextBlock Text="Offline-профиль предназначен для локального тестирования, одиночной игры и совместимых локальных серверов. Он не является аккаунтом Microsoft, не подтверждает лицензию и может не работать на серверах с онлайн-проверкой."
+                                       TextWrapping="Wrap" Foreground="{DynamicResource MutedBrush}" Margin="4,10,4,20" />
+                        </StackPanel>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Моды и сборка">
+                <Grid Margin="16">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <WrapPanel Grid.Row="0" Margin="0,0,0,12">
+                        <TextBlock x:Name="ModsInstanceLabel" Text="Выберите экземпляр на вкладке «Экземпляры»"
+                                   VerticalAlignment="Center" Margin="6,0,12,0" />
+                        <Button Content="Добавить JAR…" Click="AddMod_Click" />
+                        <Button Content="Удалить выбранный" Click="RemoveMod_Click" />
+                        <Button Content="Проверить сборку" Style="{StaticResource PrimaryButton}" Click="CheckBuild_Click" />
+                        <Button Content="Импортировать modpack…" Click="ImportModpack_Click" />
+                        <Button Content="Экспортировать modpack…" Click="ExportModpack_Click" />
+                    </WrapPanel>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.9*" />
+                            <ColumnDefinition Width="18" />
+                            <ColumnDefinition Width="1.1*" />
+                        </Grid.ColumnDefinitions>
+                        <ListBox x:Name="ModsList" SelectionMode="Single" />
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Результаты проверки" FontSize="18" FontWeight="SemiBold" Margin="4,2,4,8" />
+                            <ListBox x:Name="BuildIssuesList">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Margin="2">
+                                            <TextBlock Text="{Binding Category}" Foreground="{DynamicResource AccentBrush}" FontWeight="SemiBold" />
+                                            <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                            <TextBlock Text="{Binding Explanation}" TextWrapping="Wrap" Margin="0,3,0,0" />
+                                            <TextBlock Text="{Binding SuggestedFix}" Foreground="{DynamicResource MutedBrush}"
+                                                       TextWrapping="Wrap" Margin="0,3,0,4" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Загрузки">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="18">
+                        <TextBlock Text="Центр загрузок" FontSize="22" FontWeight="SemiBold" Margin="4,4,4,10" />
+                        <TextBlock Text="Показываются фактические данные текущего файла; общий процент не отображается, если его нельзя достоверно определить."
+                                   Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" Margin="4,0,4,12" />
+                        <ListBox x:Name="DownloadsList" MinHeight="300">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                                            <TextBlock Text="{Binding InstanceName}" Foreground="{DynamicResource MutedBrush}" FontSize="12" />
+                                            <TextBlock Text="{Binding ProgressText}" TextWrapping="Wrap" Margin="0,4,0,0" />
+                                            <TextBlock Text="{Binding Error}" Foreground="{DynamicResource DangerBrush}"
+                                                       TextWrapping="Wrap" />
+                                        </StackPanel>
+                                        <WrapPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <Button Content="Отменить" Tag="{Binding}" Click="CancelDownload_Click" />
+                                            <Button Content="Повторить" Tag="{Binding}" Click="RetryDownload_Click" />
+                                        </WrapPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Диагностика">
+                <Grid Margin="18">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <WrapPanel Grid.Row="0">
+                        <Button Content="Обновить диагностику" Click="RefreshDiagnostics_Click" />
+                        <Button Content="Открыть лог" Click="OpenLog_Click" />
+                        <Button Content="Открыть папку логов" Click="OpenLogsDirectory_Click" />
+                        <Button Content="Скопировать отчёт" Style="{StaticResource PrimaryButton}" Click="CopyReport_Click" />
+                    </WrapPanel>
+                    <TextBox Grid.Row="1" x:Name="DiagnosticsText" IsReadOnly="True" AcceptsReturn="True"
+                             TextWrapping="NoWrap" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                             FontFamily="Consolas" Margin="4,12,4,4" />
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Настройки">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Grid Margin="18">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.9*" />
+                            <ColumnDefinition Width="24" />
+                            <ColumnDefinition Width="1.1*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Внешний вид" FontSize="20" FontWeight="SemiBold" Margin="4,4,4,8" />
+                            <TextBlock Text="Тема применяется сразу и сохраняется для следующего запуска." Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" Margin="4" />
+                            <ComboBox x:Name="ThemeComboBox" Width="220" HorizontalAlignment="Left"
+                                      SelectionChanged="ThemeComboBox_SelectionChanged" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Быстрые настройки экземпляра" FontSize="20" FontWeight="SemiBold" Margin="4,4,4,8" />
+                            <TextBlock x:Name="InstanceSettingsLabel" Text="Сначала выберите экземпляр" Foreground="{DynamicResource MutedBrush}" Margin="4" />
+                            <WrapPanel>
+                                <TextBlock Text="Макс. ОЗУ (МБ)" VerticalAlignment="Center" Margin="4" />
+                                <TextBox x:Name="MemoryInput" Width="110" />
+                                <TextBlock Text="Ширина" VerticalAlignment="Center" Margin="4" />
+                                <TextBox x:Name="WidthInput" Width="75" />
+                                <TextBlock Text="Высота" VerticalAlignment="Center" Margin="4" />
+                                <TextBox x:Name="HeightInput" Width="75" />
+                            </WrapPanel>
+                            <TextBlock Text="Путь к javaw.exe" Margin="4,8,4,0" />
+                            <WrapPanel>
+                                <TextBox x:Name="JavaPathInput" Width="400" />
+                                <Button Content="Обзор…" Click="BrowseJava_Click" />
+                            </WrapPanel>
+                            <TextBlock Text="Каталог игры" Margin="4,8,4,0" />
+                            <TextBox x:Name="GameDirectoryInput" />
+                            <TextBlock Text="Дополнительные аргументы JVM" Margin="4,8,4,0" />
+                            <TextBox x:Name="JvmArgumentsInput" AcceptsReturn="True" Height="70" TextWrapping="Wrap" />
+                            <CheckBox x:Name="FullscreenCheckBox" Content="Полноэкранный режим" />
+                            <CheckBox x:Name="CloseLauncherCheckBox" Content="Закрыть лаунчер после успешного запуска" />
+                            <Button Content="Сохранить настройки экземпляра" Style="{StaticResource PrimaryButton}"
+                                    HorizontalAlignment="Left" Click="SaveInstanceSettings_Click" />
+                            <TextBlock Text="Некорректные значения будут отклонены перед запуском. Дополнительные JVM-аргументы передаются Java как отдельные аргументы, без запуска командной оболочки."
+                                       Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" Margin="4,8,4,4" />
+                        </StackPanel>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Резервные копии">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="18">
+                        <TextBlock Text="Резервная копия экземпляра" FontSize="22" FontWeight="SemiBold" Margin="4,4,4,10" />
+                        <TextBlock x:Name="BackupInstanceLabel" Text="Выберите экземпляр на вкладке «Экземпляры»"
+                                   Foreground="{DynamicResource MutedBrush}" Margin="4,0,4,10" />
+                        <WrapPanel>
+                            <CheckBox x:Name="BackupModsCheck" Content="Моды" IsChecked="True" />
+                            <CheckBox x:Name="BackupConfigCheck" Content="Конфигурации" IsChecked="True" />
+                            <CheckBox x:Name="BackupResourcePacksCheck" Content="Ресурспаки" IsChecked="True" />
+                            <CheckBox x:Name="BackupScreenshotsCheck" Content="Скриншоты" />
+                            <CheckBox x:Name="BackupWorldsCheck" Content="Сохранения миров" />
+                            <CheckBox x:Name="BackupSettingsCheck" Content="Настройки экземпляра" IsChecked="True" />
+                        </WrapPanel>
+                        <WrapPanel Margin="0,8,0,8">
+                            <Button Content="Создать резервную копию…" Style="{StaticResource PrimaryButton}" Click="CreateBackup_Click" />
+                            <Button Content="Проверить и восстановить…" Click="RestoreBackup_Click" />
+                        </WrapPanel>
+                        <TextBlock Text="Перед восстановлением будет показан список данных и совпадающих файлов. Существующие миры и другие файлы не перезаписываются без отдельного подтверждения. Токены и пароли в архив не включаются."
+                                   Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" Margin="4" />
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+
+        <Border Grid.Row="2" Background="{DynamicResource SurfaceBrush}" CornerRadius="6" Padding="10,5" Margin="0,10,0,0">
+            <TextBlock x:Name="StatusText" Text="Готово" Foreground="{DynamicResource MutedBrush}" VerticalAlignment="Center" />
+        </Border>
+    </Grid>
+</Window>

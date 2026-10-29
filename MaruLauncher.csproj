@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="background.png" />
+    <Content Include="java\**\*" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="versions\**\*" CopyToPublishDirectory="PreserveNewest" />
+    <Compile Remove="tests\**\*.cs" />
+    <InternalsVisibleTo Include="MaruLauncher.Tests" />
+  </ItemGroup>
+
+  <Target Name="MarkPortablePublish" AfterTargets="Publish">
+    <WriteLinesToFile File="$(PublishDir)portable.txt" Lines="Portable data is stored next to this launcher." Overwrite="true" />
+  </Target>
+
+</Project>
